@@ -34,11 +34,14 @@ jobs:
     - name: Determine /3/ version and clone CPython
       run: |
         PYTHON_VERSION=$(curl -s https://docs.python.org/3/ | grep -oP 'Python \K\d+\.\d+' | head -1)
+        echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
         git clone --branch "$PYTHON_VERSION" --single-branch --depth 1 https://github.com/python/cpython.git
 
     - name: Clone translation
       run: |
         git clone https://github.com/python/python-docs-${{ matrix.language_code }}.git translation-repo
+        cd translation-repo
+        git switch "$PYTHON_VERSION" || echo "No translation branch $PYTHON_VERSION"
 
     - name: Generate POT files
       run: |
