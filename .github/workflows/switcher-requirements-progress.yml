@@ -81,7 +81,7 @@ jobs:
           exit 1
         fi
 
-        if ! grep -q "tutorial (100.00% done)" potodo-results.txt; then
+        if ! grep -q "tutorial/  100.00% done" potodo-results.txt; then
           echo "tutorial/* is not fully translated"
           exit 1
         fi
