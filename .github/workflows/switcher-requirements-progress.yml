@@ -3,8 +3,8 @@ name: Check switcher requirements
 on:
   workflow_dispatch:
     inputs:
-      language_code:
-        description: 'Language code'
+      repository:
+        description: 'Repository (for example: python/python-docs-pl)'
         required: true
         type: string
 
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        language_code: [ "${{ inputs.language_code }}" ]
+        repository: [ "${{ inputs.repository }}" ]
 
     steps:
     - name: Checkout current repository
@@ -39,7 +39,7 @@ jobs:
 
     - name: Clone translation
       run: |
-        git clone https://github.com/python/python-docs-${{ matrix.language_code }}.git translation-repo
+        git clone https://github.com/${{ matrix.repository }}.git translation-repo
         cd translation-repo
         git switch "$PYTHON_VERSION" || echo "No translation branch $PYTHON_VERSION"
 
@@ -90,6 +90,6 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: potodo-results-${{ inputs.language_code }}
+        name: potodo-results-${{ inputs.repository }}
         path: potodo-results.txt
         retention-days: 30
