@@ -81,7 +81,7 @@ jobs:
           exit 1
         fi
 
-        if ! grep -q "# tutorial (100.00% done)" potodo-results.txt; then
+        if ! grep -q "tutorial (100.00% done)" potodo-results.txt; then
           echo "tutorial/* is not fully translated"
           exit 1
         fi
@@ -90,6 +90,6 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: potodo-results-${{ inputs.repository }}
+        name: potodo-results
         path: potodo-results.txt
         retention-days: 30
