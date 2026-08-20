@@ -67,22 +67,13 @@ jobs:
     - name: Run potodo
       run: |
         cd translation-repo
-        potodo | tee ../potodo-results.txt
+        potodo --exclude '**/*' '!tutorial/*' '!bugs.po' '!library/functions.po' \
+          | tee ../potodo-results.txt
 
     - name: Verify requirements are met
       run: |
-        if grep -q "functions.po" potodo-results.txt; then
-          echo "library/functions.po  is not fully translated"
-          exit 1
-        fi
-        
-        if grep -q "bugs.po" potodo-results.txt; then
-          echo "bugs.po is not fully translated"
-          exit 1
-        fi
-
-        if ! grep -q "tutorial/  100.00% done" potodo-results.txt; then
-          echo "tutorial/* is not fully translated"
+        if grep -q "% translated" potodo-results.txt; then
+          echo "Core resources are not fully translated"
           exit 1
         fi
 
