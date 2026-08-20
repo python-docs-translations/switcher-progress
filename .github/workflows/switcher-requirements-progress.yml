@@ -1,4 +1,5 @@
 name: Check switcher requirements
+run-name: Check switcher requirements for ${{ inputs.repository }}
 
 on:
   workflow_dispatch:
