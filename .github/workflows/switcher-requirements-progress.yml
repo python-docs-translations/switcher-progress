@@ -1,4 +1,5 @@
 name: Check switcher requirements
+run-name: Check switcher requirements for ${{ inputs.repository }}
 
 on:
   workflow_dispatch:
@@ -26,8 +27,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y gettext
         python -m pip install --upgrade pip
         pip install blurb potodo
 
@@ -48,41 +47,18 @@ jobs:
         cd cpython/Doc
         make venv
         make gettext
-        mkdir -p ../../pot-files
-        cp -r build/gettext/*.pot ../../pot-files/
-
-    - name: msgmerge PO files
-      run: |
-        cd translation-repo
-        find . -name "*.po" -type f | while read po_file; do
-          rel_path=${po_file#./}
-          pot_file="../pot-files/${rel_path%.po}.pot"
-
-          if [ -f "$pot_file" ]; then
-            echo "Merging $po_file with $pot_file"
-            msgmerge --update "$po_file" "$pot_file"
-          fi
-        done
 
     - name: Run potodo
       run: |
         cd translation-repo
-        potodo | tee ../potodo-results.txt
+        potodo --pot ../cpython/Doc/build/gettext \
+          --exclude '**/*' '!tutorial/*' '!bugs.po' '!library/functions.po' \
+          | tee ../potodo-results.txt
 
     - name: Verify requirements are met
       run: |
-        if grep -q "functions.po" potodo-results.txt; then
-          echo "library/functions.po  is not fully translated"
-          exit 1
-        fi
-        
-        if grep -q "bugs.po" potodo-results.txt; then
-          echo "bugs.po is not fully translated"
-          exit 1
-        fi
-
-        if ! grep -q "tutorial/  100.00% done" potodo-results.txt; then
-          echo "tutorial/* is not fully translated"
+        if grep -q "% translated" potodo-results.txt; then
+          echo "Core resources are not fully translated"
           exit 1
         fi
 
